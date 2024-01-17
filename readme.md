@@ -1,16 +1,24 @@
 # Pusher-Zod
 
-Pusher-Zod is a TypeScript package designed to enhance type safety for both server and client implementations when using Pusher. By integrating the powerful Zod library for runtime type validation, Pusher-Zod ensures that your Pusher event data adheres to the expected types, reducing the risk of runtime errors and providing a more robust development experience.
+Pusher-Zod is a TypeScript package designed to enhance type safety for both server and client implementations when using Pusher (or Soketi). By integrating the powerful Zod library for runtime type validation, Pusher-Zod ensures that your Pusher event data adheres to the expected types, reducing the risk of runtime errors and providing a more robust development experience.
 
 ## Installation
 
 To install Pusher-Zod, use your package manager of choice:
 
 ```bash
-npm install pusher-zod
+npm install pusher-zod zod
 # or
-yarn add pusher-zod
+yarn add pusher-zod zod
+# or
+pnpm instal pusher-zod zod
 ```
+
+## Ressources
+
+- [Pusher](https://pusher.com/)
+- [Zod](https://zod.dev)
+- [Soketi](https://soketi.app/)
 
 ## Usage
 
@@ -128,16 +136,23 @@ await pusherServer.sendToUser("1", "typing", {
 });
 ```
 
-## Ressources
-
-- [Pusher](https://pusher.com/)
-- [Zod](https://zod.dev)
-
 ## Features
 
-Type-Safe Event Data: Ensure that event data sent and received through Pusher adheres to predefined TypeScript types.
-Server and Client Integration: Apply type safety both on the server and client sides for a seamless end-to-end development experience.
-Zod Integration: Leverage the Zod library for runtime type validation, making it easy to define and enforce data schemas.
+- Type-Safe Event Data: Ensure that event data sent and received through Pusher adheres to predefined TypeScript types.
+- Server and Client Integration: Apply type safety both on the server and client sides for a seamless end-to-end development experience.
+- Zod Integration: Leverage the Zod library for runtime type validation, making it easy to define and enforce data schemas.
+
+## Roadmap
+
+- [x] Type-safe event data
+- [x] Server and client integration
+- [x] Zod integration
+- [ ] Support for presence channels
+- [ ] Support for private channels
+- [ ] Add choice between safeParse and parse
+- [ ] Type-safe user data
+- [ ] Retrieve existing private channels and presence channels names on the server side
+- [ ] Add tests
 
 ## Contributing
 
