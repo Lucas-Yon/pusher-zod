@@ -5,8 +5,20 @@
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Lucas-Yon/pusher-zod.git"
+  },
   "files": [
     "dist"
+  ],
+  "keywords": [
+    "pusher",
+    "zod",
+    "typescript",
+    "typesafety",
+    "pusher-js",
+    "soketi"
   ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -14,7 +26,7 @@
     "build": "tsup"
   },
   "author": "lucas-yon",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "pusher": "^5.2.0",
     "pusher-js": "^8.4.0-rc2"

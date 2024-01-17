@@ -67,7 +67,7 @@ const Client = new TypeSafePusherClient({
     // ...your options
 })
 
-// ubscribe to a channel. You will get an error if you try to join a channel that is not defined. The ID can be any value you want.
+// Subscribe to a channel. You will get an error if you try to join a channel that is not defined. The ID can be any value you want.
 const channel = Client.joinChannel("chat", "conversationID");
 
 // listen to an event
