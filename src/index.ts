@@ -148,6 +148,36 @@ export default function <
     ): Promise<PusherServer.Response> {
       return super.sendToUser(userId, event, data);
     }
+    getChannels<K extends ChannelsNames>(): Array<K> {
+      return Object.keys(setup) as Array<K>;
+    }
+    getPrivateChannels<K extends ChannelsNames>(): Array<
+      Extract<K, `private-${string}`>
+    > {
+      const channels = Object.keys(setup) as Array<K>;
+      return channels.filter(this.isPrivateChannel);
+    }
+
+    getPresenceChannels<K extends ChannelsNames>(): Array<
+      Extract<K, `presence-${string}`>
+    > {
+      const channels = Object.keys(setup) as Array<K>;
+      return channels.filter(this.isPresenceChannel);
+    }
+
+    private isPrivateChannel<K extends ChannelsNames>(
+      channel: K
+    ): channel is Extract<K, `private-${string}`> {
+      if (typeof channel !== "string") return false;
+      return channel.startsWith("private-");
+    }
+
+    private isPresenceChannel<K extends ChannelsNames>(
+      channel: K
+    ): channel is Extract<K, `presence-${string}`> {
+      if (typeof channel !== "string") return false;
+      return channel.startsWith("presence-");
+    }
   }
   function parseData<K>(
     zodSchema: z.ZodType<any, any>,
