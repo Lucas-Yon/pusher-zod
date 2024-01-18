@@ -1,6 +1,6 @@
 {
   "name": "pusher-zod",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "pusher with typesafety using zod to parse the data",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
