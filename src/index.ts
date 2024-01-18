@@ -2,7 +2,7 @@
 import PusherClient, { type Channel as PusherChannel } from "pusher-js";
 import PusherServer from "pusher";
 
-import type { z, ZodType, SafeParseReturnType } from "zod";
+import type { z, ZodType, SafeParseReturnType, ParseReturnType } from "zod";
 export default function <
   S extends Record<string, Record<string, z.ZodType<any, any>>>,
   P extends Partial<Record<string, z.ZodType<any, any>>> = Record<string, never>
@@ -28,7 +28,7 @@ export default function <
   type MyChannel<K extends ChannelsNames> = {
     bind<E extends EventKeys<K>>(
       eventName: E,
-      callback: (data: S[K][E]) => void,
+      callback: (data: z.infer<S[K][E]>) => void,
       context?: any
     ): MyPusherClient;
     unbind<E extends EventKeys<K>>(
@@ -38,7 +38,7 @@ export default function <
     ): MyPusherClient;
     listen<E extends EventKeys<K>>(
       eventName: E,
-      callback: (data: SafeParseReturnType<S[K][E], S[K][E]>) => void,
+      callback: (data: z.infer<S[K][E]>) => void,
       context?: any
     ): void;
   } & PusherChannel;
@@ -55,7 +55,7 @@ export default function <
     member: {
       bind: <E extends Extract<keyof P, string>>(
         eventName: E,
-        callback: (data: SafeParseReturnType<P[E], P[E]>) => void,
+        callback: (data: z.infer<NonNullable<P[E]>>) => void,
         context?: any
       ) => any;
     };
@@ -70,11 +70,12 @@ export default function <
         ...this.user,
         bind: <E extends keyof P>(
           eventName: E,
-          callback: (data: SafeParseReturnType<P[E], P[E]>) => void,
+          callback: (data: z.infer<NonNullable<P[E]>>) => void,
           context?: any
         ) => {
           const parsedCallback = (data: P[typeof eventName]) => {
-            callback(parseData(userEvents[eventName]!, data));
+            const parsedData = parseData(userEvents[eventName]!, data);
+            if (parsedData !== undefined) callback(parsedData);
           };
           return this.user.bind(String(eventName), parsedCallback, context);
         },
@@ -95,8 +96,10 @@ export default function <
         `${String(channelName)}${channel_id_separator}${id}`
       ) as MyChannel<K>;
       channel.listen = (eventName, callback, context) => {
-        const parsedCallback = (data: S[K][typeof eventName]) => {
-          callback(parseData(setup[channelName]![eventName]!, data));
+        const parsedCallback = (data: z.infer<S[K][typeof eventName]>) => {
+          const parsedData = parseData(setup[channelName][eventName], data);
+          if (parsedData !== undefined)
+            callback(parseData(setup[channelName]![eventName]!, data));
         };
         channel.bind(eventName, parsedCallback, context);
       };
@@ -146,8 +149,16 @@ export default function <
       return super.sendToUser(userId, event, data);
     }
   }
-  function parseData<K>(zodSchema: z.ZodType<any, any>, data: K) {
-    return zodSchema.safeParse(data);
+  function parseData<K>(
+    zodSchema: z.ZodType<any, any>,
+    data: K
+  ): K | undefined {
+    try {
+      return zodSchema.parse(data);
+    } catch (error) {
+      console.error(error);
+      return undefined;
+    }
   }
 
   return {

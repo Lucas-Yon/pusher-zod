@@ -20,6 +20,51 @@ pnpm instal pusher-zod zod
 - [Zod](https://zod.dev)
 - [Soketi](https://soketi.app/)
 
+## New methods added to the Pusher server and client instances
+
+### Client
+
+#### instead of using subscribe you should use joinChannel. The channelID can be any string you want. The channelName must be one of the channels defined in the setup object :
+
+```ts
+client.joinChannel(channelName: string, channelID: string): Channel;
+// with subscribe :
+client.subscribe("channelName_channelID");
+```
+
+#### same logic for unsubscribe you should use leaveChannel:
+
+```ts
+client.leaveChannel(channelName: string, channelID: string): void;
+// with unsubscribe :
+client.unsubscribe("channelName_channelID");
+```
+
+#### When joining a channel with joinChannel you can now listen to events using the listen method. The event name must be one of the events defined in the setup object :
+
+```ts
+channel.listen("eventName", (data) => {});
+// with bind but no typesafety :
+channel.bind("eventName", (data) => {});
+```
+
+### Server
+
+#### instead of using trigger you should use invoke. The channelID can be any string you want. The channelName must be one of the channels defined in the setup object :
+
+```ts
+pusherServer.invoke(
+  channelName: string,
+  channelID: string | string[],
+  eventName: string,
+  data: any
+);
+// with trigger :
+pusherServer.trigger("channelName_channelID", "eventName", data);
+```
+
+### **Even through bind/subcribe/unsuscribe or trigger are still available they are not type-safe and should not be used. Instead you should use listen/joinChannel/leaveChannel**
+
 ## Usage
 
 ### First create a setup object that defines your Pusher channels and events with Zod schemas:
@@ -27,6 +72,7 @@ pnpm instal pusher-zod zod
 ```typescript
 import pusherZod from "pusher-zod";
 import { z } from "zod";
+
 const setup = {
   chat: {
     message: z.object({
@@ -41,7 +87,7 @@ const setup = {
   // Add more channels and events as needed
 };
 
-// Define if you need the users events ** optional **
+// optional : define user events
 
 const userEvents = {
   typing: z.object({
@@ -75,16 +121,19 @@ const Client = new TypeSafePusherClient({
     // ...your options
 })
 
-// Subscribe to a channel. You will get an error if you try to join a channel that is not defined. The ID can be any value you want.
+// Subscribe to a channel. You will get a type error if you try to join a channel that is not defined. The ID can be any value you want.
 const channel = Client.joinChannel("chat", "conversationID");
 
 // listen to an event
 channel.listen("message", (data) => {
-  // data is parsed and validated using safeParse from Zod
-  if(!data.success) return console.log("error");
-
-  // data is now typed and safe
+  // data is parsed and validated using Parse from Zod
   console.log(data.user, data.text);
+});
+
+// user events are also type-safe
+ channel.user.bind("typing", (data) => {
+  // data is parsed and validated using Parse from Zod
+  console.log(data.user);
 });
 
 ```
@@ -118,9 +167,15 @@ await pusherServer.invoke("chat", "conversation1", "message", {
 
 // Invoke like trigger also support multiple channels but instead you need to pass multiple channel ids
 
-await pusherServer.invoke("chat", ["conversation1","conversation2","conversation3"], "message", {
-  user: "user",
-  text: "te
+await pusherServer.invoke(
+  "chat",
+  ["conversation1", "conversation2", "conversation3"],
+  "message",
+  {
+    user: "user",
+    text: "text",
+  }
+);
 // sendToUser method is also now typesafe
 
 await pusherServer.sendToUser(
