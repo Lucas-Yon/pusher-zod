@@ -63,7 +63,7 @@ pusherServer.invoke(
 pusherServer.trigger("channelName_channelID", "eventName", data);
 ```
 
-### **Even through bind/subcribe/unsuscribe or trigger are still available they are not type-safe and should not be used. Instead you should use listen/joinChannel/leaveChannel**
+### **Even through bind/subcribe/unsubscribe or trigger are still available they are not type-safe and should not be used. Instead you should use listen/joinChannel/leaveChannel**
 
 ## Usage
 
@@ -87,7 +87,7 @@ const setup = {
   // Add more channels and events as needed
 };
 
-// optional : define user events
+// Optional : Define user events
 
 const userEvents = {
   typing: z.object({
@@ -106,7 +106,7 @@ const userEvents = {
 export const { TypeSafePusherClient, TypeSafePusherServer } = pusherZod({
   setup,
   userEvents, // optional
-  channel_id_separator: "_", // optional choose your own separator a channel will be call chat_conversationID for example
+  channel_id_separator: "_", // Optional: Choose your own separator. For example, a channel could be called 'chat_conversationID'
 });
 ```
 
