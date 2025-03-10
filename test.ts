@@ -1,4 +1,4 @@
-import test from "./src/index";
+import test from "./src"; //"./src/index";
 import z from "zod";
 
 const { TypeSafePusherClient, TypeSafePusherServer } = test({
@@ -27,6 +27,8 @@ const client = new TypeSafePusherClient("key", {
 client.joinChannel("kappa", "123").listen("event", (data) => {
   console.log(data.name);
 });
+
+//client.user.watchlist.
 
 const server = new TypeSafePusherServer({
   appId: "123",

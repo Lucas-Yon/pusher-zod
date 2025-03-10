@@ -82,12 +82,6 @@ export default function <
       };
     }
 
-    /**
-     *
-     * @param channelName  existing channel name // add prefix private- or presence-
-     * @param id  identifier of the channel ( room id, user id, etc...)
-     * @returns  channel with classic pusher methods. Use listen to get type safe data
-     */
     joinChannel<K extends ChannelsNames>(
       channelName: K,
       id: string | number
@@ -139,6 +133,30 @@ export default function <
         `${String(channelName)}${channel_id_separator}${channel_id}`,
         String(eventName),
         data
+      );
+    }
+    invokeBatch<K extends ChannelsNames, E extends EventKeys<K>>(
+      batch: Array<{
+        channel: K;
+        channel_id: string | number;
+        name: E;
+        data: z.infer<(typeof setup)[K][E]>;
+        socket_id?: string;
+        info?: any;
+      }>
+    ) {
+      return super.triggerBatch(
+        batch.map((b) => {
+          return {
+            channel: `${String(b.channel)}${channel_id_separator}${
+              b.channel_id
+            }`,
+            name: String(b.name),
+            data: b.data,
+            socket_id: b.socket_id,
+            info: b.info,
+          };
+        })
       );
     }
     override sendToUser<E extends keyof P>(
